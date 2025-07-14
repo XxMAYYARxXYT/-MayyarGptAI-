@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Smart Mayar - Advanced</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top left, #1e3c72, #2a5298, #1e3c72);
+    color: #eee;
+    margin: 0; padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    align-items: center;
+    background-attachment: fixed;
+  }
+  header {
+    margin-top: 40px;
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-shadow: 0 0 10px #74b9ff;
+  }
+  #chatBox {
+    background: rgba(30, 60, 114, 0.85);
+    border-radius: 15px;
+    width: 90%;
+    max-width: 700px;
+    height: 450px;
+    margin: 40px 0;
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: 0 0 30px #74b9ffaa;
+    scrollbar-width: thin;
+  }
+  #chatBox::-webkit-scrollbar {
+    width: 8px;
+  }
+  #chatBox::-webkit-scrollbar-thumb {
+    background: #74b9ffaa;
+    border-radius: 10px;
+  }
+  .chat-msg {
+    margin-bottom: 14px;
+    line-height: 1.5;
+    white-space: pre-line;
+  }
+  .user {
+    color: #81ecec;
+    font-weight: 600;
+  }
+  .bot {
+    color: #55efc4;
+    font-weight: 600;
+  }
+  form {
+    width: 90%;
+    max-width: 700px;
+    display: flex;
+    margin-bottom: 40px;
+  }
+  input[type="text"] {
+    flex-grow: 1;
+    padding: 14px 18px;
+    border-radius: 15px 0 0 15px;
+    border: none;
+    font-size: 1.1rem;
+    outline: none;
+    background: rgba(255 255 255 / 0.1);
+    color: #eee;
+    transition: background 0.3s ease;
+  }
+  input[type="text"]:focus {
+    background: rgba(255 255 255 / 0.25);
+  }
+  button {
+    padding: 14px 25px;
+    background: #0984e3;
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 0 15px 15px 0;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #74b9ff;
+  }
+  footer {
+    margin-bottom: 30px;
+    font-size: 1rem;
+    color: #dfe6e9;
+    letter-spacing: 0.7px;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.js"></script>
+</head>
+<body>
+<header>🤖 AI Smart Mayar - Advanced</header>
+<div id="chatBox"></div>
+<form id="chatForm" autocomplete="off">
+  <input id="userInput" type="text" placeholder="Ask me anything..." />
+  <button type="submit">Send</button>
+</form>
+<footer>Made by dblw mayyar</footer>
+
+<script>
+const chatBox = document.getElementById('chatBox');
+const chatForm = document.getElementById('chatForm');
+const userInput = document.getElementById('userInput');
+
+const knowledgeBase = {
+  greetings: ["Hello! How can I assist you today?", "Hi there! What can I do for you?", "Hey! Ask me anything."],
+  whoMadeYou: "I was proudly created by dblw mayyar. He's a genius! 😎",
+  gravity: "Gravity is the force that attracts two bodies toward each other.",
+  sun: "The Sun is the star at the center of our solar system.",
+  earth: "Earth is our home planet, the third from the Sun.",
+  brain: "The brain controls thoughts, memory, and body functions.",
+  joke: "Why did the robot go on vacation? Because it needed to recharge its batteries!",
+  default: "Sorry, I don't understand that yet. Try asking something else!",
+};
+
+function randomFromArray(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function botReply(input) {
+  const text = input.toLowerCase().trim();
+
+  if (/who (made|created) you/.test(text)) {
+    return knowledgeBase.whoMadeYou;
+  }
+  if (/(hi|hello|hey|hola|السلام عليكم)/.test(text)) {
+    return randomFromArray(knowledgeBase.greetings);
+  }
+  if (text.includes('gravity')) {
+    return knowledgeBase.gravity;
+  }
+  if (text.includes('sun')) {
+    return knowledgeBase.sun;
+  }
+  if (text.includes('earth')) {
+    return knowledgeBase.earth;
+  }
+  if (text.includes('brain')) {
+    return knowledgeBase.brain;
+  }
+  if (text.includes('joke')) {
+    return knowledgeBase.joke;
+  }
+
+  try {
+    const expr = text.replace(/^(calc|calculate|solve)\s*/i, '');
+    const result = math.evaluate(expr);
+    if (result !== undefined) {
+      return `Answer: ${result}`;
+    }
+  } catch {}
+
+  return knowledgeBase.default;
+}
+
+function addMessage(text, className) {
+  const msg = document.createElement('div');
+  msg.className = 'chat-msg ' + className;
+  msg.textContent = text;
+  chatBox.appendChild(msg);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+chatForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const input = userInput.value;
+  if (!input.trim()) return;
+  addMessage('You: ' + input, 'user');
+  userInput.value = '';
+  addMessage('AI Smart Mayar: thinking...', 'bot');
+  setTimeout(() => {
+    const reply = botReply(input);
+    const botMsgs = chatBox.querySelectorAll('.bot');
+    if (botMsgs.length > 0) {
+      botMsgs[botMsgs.length - 1].textContent = 'AI Smart Mayar: ' + reply;
+    }
+  }, 800);
+});
+</script>
+</body>
+</html>
